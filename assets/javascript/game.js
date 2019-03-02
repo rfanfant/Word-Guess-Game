@@ -123,7 +123,7 @@ var wordGame = {
       // save user input
 
       // determine if userGuess is contained in secrect word
-      if (this.guessedCharacters.indexOf(this.userGuess) < 0) {
+      if (this.guessedCharacters.indexOf(inputCharacter) == -1) {
          if (enableDebug)
             console.log(" userGuess is NOT contained in secret word");
          return false;
@@ -142,10 +142,13 @@ var wordGame = {
 
       // iterate through every character in secretWord and to make sure guessedCharacters contains it. If not
       // wordMatch returns false
+
+      console.log(this.secretWord);
+
       for (var i = 0; i < this.secretWord.length; i++) {
          // determine if every character in secretWord is contained in guessedCharacters
-         var str = Arrray.secretWord[i];
-         if (guessedCharacters.indexOf(str) < 0)
+
+         if (guessedCharacters.indexOf(this.secretWord[i]) !== -1)
             return false;
          if (enableDebug)
             console.log(" perfect match and user wins")
@@ -179,6 +182,7 @@ var wordGame = {
       // not a duplicate therefore keep track of it
       this.guessedCharacters.push(inputCharacter);
 
+      console.log(guessedCharacters);
 
       if (this.matchFound(inputCharacter) == true) {
 
@@ -206,8 +210,8 @@ var wordGame = {
             this.updateDisplay();
          }
          else { // games over so restart game
-            this.gamesOver();
-            this.startGame();
+            this.gamesOver;
+            this.startGame;
          }
       }
    },
@@ -224,6 +228,13 @@ var wordGame = {
       userGuess = "";
       guessedCharacters = "";
       this.updateDisplay();
+
+      for (var i=0; i < this.secretWord.length; i++){
+         this.guessedCharacters.push("-");
+      }
+      
+      if (enableDebug)
+         console.log("guessedCharacters: " + this.guessedCharacters);
    },
 
 
