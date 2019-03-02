@@ -10,7 +10,8 @@ var wordGame = {
    secretWord: [],
    guessesRemaining: 9,
    userGuess: "",
-   guessedCharacters: [],
+   hangmanCharacters: [],
+   userGuessedCharacters: [],
    welcomeToWordGuess: "Wecome to the Word Guess game. Please guess the secret word by entering characters on the keyboard. If you don't guess the secret word in nine tries, you lose the game.",
 
 
@@ -43,8 +44,9 @@ var wordGame = {
       console.log("wins: " + this.wins);
       console.log("losses: " + this.losses);
       console.log("guesses: " + this.guessesRemaining);
-      console.log("user guess: " + userGuess);
-      this.displayGuessedCharacters();
+      console.log("user guess: " + this.userGuess);
+      console.log("User Guessed Characters: " + this.userGuessedCharacters);
+      console.log("Hangman Charactres: " + this.hangmanCharacters);
       console.log("***********************************************************************");
    },
 
@@ -85,13 +87,7 @@ var wordGame = {
    * *****************************************************************************************/
    displayGuessedCharacters: function () {
 
-      var strText = "";
-      for (var i=0; i < guessedCharacters.length; i++)
-      {
-         strText +=  (this.guessedCharacters[i] + " ") ;
-      }
-   
-      console.log("guessedCharacters: " + strText);
+      console.log("userGuessedCharacters: " + this.userGuessedCharacters);
    },
 
    /********************************************************************************************
@@ -101,7 +97,7 @@ var wordGame = {
    duplicateInputCharacter: function (inputCharacter) {
 
       /* compare input character to every character in the array of previously guessed characters*/
-      if (this.guessedCharacters.indexOf(inputCharacter) < 0)
+      if (this.userGuessedCharacters.indexOf(inputCharacter) < 0)
          return false;
       else
          return true;
@@ -109,7 +105,7 @@ var wordGame = {
 
    userWins: function () {
       if (enableDebug)
-         console.log("userWins funcition called")
+         console.log("userWins function called")
 
    },
 
@@ -117,48 +113,46 @@ var wordGame = {
 
 
    /********************************************************************************************
-   *  determines if user input character matches a character in the word
+   *  determines if user input characters  matches our secret word
    * *****************************************************************************************/
-   matchFound: function (inputCharacter) {
+   wordFound: function (inputCharacter) {
       // save user input
 
       // determine if userGuess is contained in secrect word
-      if (this.guessedCharacters.indexOf(inputCharacter) == -1) {
-         if (enableDebug)
-            console.log(" userGuess is NOT contained in secret word");
-         return false;
+      for (var i = 0; i < this.secretWord.length; i++) {
+         // userGuessCharacters need to contain every letter in secret word or else it 
+         // cant be a match
+         if (this.userGuessedCharacters.indexOf(this.secretWord[i]) === -1) {
+            if (enableDebug)
+               console.log("  a userGuessedCharacters is NOT contained in secret word");
+            return false;
+         }
       }
-      else {
-         if (enableDebug)
-            console.log(" userGuess is conatined in secret word");
-         return true;
-      }
+
+      // If we get to this point, we have a word match
+      return true;
    },
 
    /********************************************************************************************
     *  returns true if usser guessed the characters in our secret word
     * *****************************************************************************************/
-   wordMatches: function () {
+   charMatches: function () {
 
-      // iterate through every character in secretWord and to make sure guessedCharacters contains it. If not
-      // wordMatch returns false
+      // iterate through every character in secretWord and to make sure guessedCharacters contains it,
+      // if so return true, else return false
 
-      console.log(this.secretWord);
-
-      for (var i = 0; i < this.secretWord.length; i++) {
-         // determine if every character in secretWord is contained in guessedCharacters
-
-         if (guessedCharacters.indexOf(this.secretWord[i]) !== -1)
-            return false;
+      console.log("check to see if user guess matches any characters in secret word!");
+      if (this.secretWord.indexOf(this.userGuess) !== -1) {
          if (enableDebug)
-            console.log(" perfect match and user wins")
-         wins++;
-         this.userWins();
-         this.startGame();
+            console.log(" character matche in our secret word!");
+         return true;
       }
-      return true;
+      else {
+         if (enableDebug)
+            console.log(" NO character match in our secret word!");
+         return false;
+      }
    },
-
 
    /********************************************************************************************
     * called when OnKeyUp event has occured. inputCharacter contains the key that the user pressed.
@@ -167,32 +161,31 @@ var wordGame = {
    userInput: function (inputCharacter) {
 
       // Save user input
-      userGuess = inputCharacter;
+      this.userGuess = inputCharacter;
       alert("userGuess: " + inputCharacter);
 
       // do nothing if input character is a duplicate
-      if (this.duplicateInputCharacter(userGuess) == true) {
+      if (this.duplicateInputCharacter(this.userGuess) == true) {
          if (enableDebug)
             console.log("duplicate character found");
          return;
       }
 
       if (enableDebug)
-      console.log(" NOT duplicate character");
+         console.log(" NOT duplicate character");
       // not a duplicate therefore keep track of it
-      this.guessedCharacters.push(inputCharacter);
+      this.userGuessedCharacters.push(inputCharacter);
 
-      console.log(guessedCharacters);
+      console.log(this.userGuessedCharacters);
 
-      if (this.matchFound(inputCharacter) == true) {
+      if (this.charMatches(this.userGuess) == true) {
 
-         if (enableDebug)
-         {
+         if (enableDebug) {
             console.log("We've found a match");
          }
 
          // we've found a match so update the display
-         if (this.wordMatches() == true) {
+         if (this.wordFound() == true) {
             this.userWins();
             this.startGame();
 
@@ -202,16 +195,16 @@ var wordGame = {
          this.updateDisplay();
       }
       else {
-         
+
          this.guessesRemaining = this.guessesRemaining - 1;
          if (this.guessesRemaining > 0) {
-            if(enableDebug)
+            if (enableDebug)
                console.log("calling updateDisplay");
             this.updateDisplay();
          }
          else { // games over so restart game
-            this.gamesOver;
-            this.startGame;
+            this.gamesOver();
+            this.startGame();
          }
       }
    },
@@ -222,19 +215,23 @@ var wordGame = {
      * the key is stored in the guessedCharacter array; 
      **********************************************************************************************/
    startGame: function () {
+
       secretWord = this.getWord();
+      for (var i = 0; i < this.secretWord.length; i++) {
+         this.hangmanCharacters.push("-");
+      }
       guessesRemaining = 9;
       wins = 0;
       userGuess = "";
-      guessedCharacters = "";
+      userGuessedCharacters = "";
+
       this.updateDisplay();
 
-      for (var i=0; i < this.secretWord.length; i++){
-         this.guessedCharacters.push("-");
+      if (enableDebug) {
+         console.log("hangmanCharacters: " + this.hangmanCharacters);
+         console.log("userGuessedCharacters: " + this.userGuessedCharacters);
       }
-      
-      if (enableDebug)
-         console.log("guessedCharacters: " + this.guessedCharacters);
+
    },
 
 
@@ -249,7 +246,8 @@ var wordGame = {
       guessesRemaining = 9;
       userGuess = "";
       wins = 0;
-      guessedCharacters = "";
+      hangmanCharacters = "";
+      userGuessedCharacters = "";
       this.updateDisplay();
    }
 
