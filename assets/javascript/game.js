@@ -105,12 +105,38 @@ var wordGame = {
 
    userWins: function () {
       if (enableDebug)
-         console.log("userWins function called")
+         console.log("user Wins function called");
+
+      alert(" You  WON the WORD GUESS game!!! Congrats!!!");
 
    },
 
+   /********************************************************************************************
+   *  replace the hangman "-" characters/location with the correct user guessed character. index
+   *   position is determined from comparning user guessed characters to where they are found in 
+   *   the secret word.
+   * *****************************************************************************************/
+   updateHangmanCharacters: function () {
+      //index in the array to replace
+      var charIndex = 0;
 
+      // replace the "-" character in hangmanCharacter array to show the user locations
+      // in the secret word that his userGuess character matches.
 
+      while ((charIndex !== -1) && (charIndex < this.secretWord.length)) {
+
+         // find location of first match (if any)
+         charIndex = this.secretWord.indexOf(this.userGuess, charIndex);
+         // we found a match of charIndex is not == to -1
+         if (charIndex !== -1) {
+            // replace the "-" with correct guessed letter
+            this.hangmanCharacters.splice(charIndex, 1, this.userGuess);
+
+            //increment search position for next search
+            charIndex++;
+         }
+      }
+   },
 
    /********************************************************************************************
    *  determines if user input characters  matches our secret word
@@ -145,6 +171,10 @@ var wordGame = {
       if (this.secretWord.indexOf(this.userGuess) !== -1) {
          if (enableDebug)
             console.log(" character matche in our secret word!");
+
+         // we have characters(s) that match so update the hangmanCharacter array to show 
+         // correctly guessed characters
+         this.updateHangmanCharacters();
          return true;
       }
       else {
@@ -164,19 +194,24 @@ var wordGame = {
       this.userGuess = inputCharacter;
       alert("userGuess: " + inputCharacter);
 
-      // do nothing if input character is a duplicate
+      // do nothing if input character has already been entered by the user
       if (this.duplicateInputCharacter(this.userGuess) == true) {
          if (enableDebug)
             console.log("duplicate character found");
+
          return;
       }
 
       if (enableDebug)
-         console.log(" NOT duplicate character");
-      // not a duplicate therefore keep track of it
+         console.log(" NOT a duplicate character");
+
+      // not a duplicate therefore it's a valid selction so 
+      // we will keep track of it
       this.userGuessedCharacters.push(inputCharacter);
 
-      console.log(this.userGuessedCharacters);
+      if (enableDebug)
+         console.log(this.userGuessedCharacters);
+
 
       if (this.charMatches(this.userGuess) == true) {
 
@@ -187,6 +222,7 @@ var wordGame = {
          // we've found a match so update the display
          if (this.wordFound() == true) {
             this.userWins();
+            this.gamesOver();
             this.startGame();
 
             if (enableDebug)
@@ -220,20 +256,29 @@ var wordGame = {
       for (var i = 0; i < this.secretWord.length; i++) {
          this.hangmanCharacters.push("-");
       }
+
+      // Intialize all our variables at the start of a new game
+
+      if (enableDebug)
+         alert(this.welcomeToWordGuess);
+
+
       guessesRemaining = 9;
       wins = 0;
       userGuess = "";
       userGuessedCharacters = "";
+      guessesRemaining = 9;
+      userGuess = "";
+      hangmanCharacters = "";
+      userGuessedCharacters = "";
 
-      this.updateDisplay();
+      this.updateDisplay()
 
       if (enableDebug) {
          console.log("hangmanCharacters: " + this.hangmanCharacters);
          console.log("userGuessedCharacters: " + this.userGuessedCharacters);
       }
-
    },
-
 
    /********************************************************************************************
    * called when OnKeyUp event has occured. inputCharacter contains the key that the user pressed.
