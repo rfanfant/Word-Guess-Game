@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>Title</title>
+    <title>Word Guess Game</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -34,23 +34,23 @@
 
     <div class="container">
 
-        </div>
+    </div>
 
-        <p id=UserMessage> </p>
-        <hr>
+    <p id=UserMessage> </p>
+    <hr>
 
-        <p id=Underscore>
-        </p>
-        <p id=Wins>
-        </p>
-        <p id=Losses>
-        </p>
-        <p id=TriesRemaining>
-            </p>
-        <p id=CharsLeft>
-        </p>
-        <p id=UserInput></p> 
-        </p>
+    <p id=Underscore>
+    </p>
+    <p id=Wins>
+    </p>
+    <p id=Losses>
+    </p>
+    <p id=TriesRemaining>
+    </p>
+    <p id=CharsLeft>
+    </p>
+    <p id=UserInput></p>
+    </p>
 
     </div>
 
@@ -77,7 +77,7 @@
         targetUnderscore.textContent = "Word to Guess = " + wordGame.getUnderscore();
         targetWins.textContent = "Wins = 0 ";
         targetLosses.textContent = "Losses = 0";
-        targetCharsLeft.textContent = "TriesRemaining = 9 "
+        targetCharsLeft.textContent = "Tries Remaining = 9 "
         targetUserInput.textContent = "User Input = "
 
 
@@ -88,18 +88,33 @@
             var strChar = String.fromCharCode(event.keyCode);
             strChar = strChar.toLowerCase();
 
-            // call the game with user input character
-            wordGame.userInput(strChar);
+            // If game is not running restart the game and message the user
+            if (wordGame.getIsGameRunning() === false) {
+                wordGame.startGame();
+                targetUserMessage.textContent = "Welcome to the Word Guess Game. Press letters on the keyboard to play a new game!!!"
 
+            }
+            else {
+                // game is running and user has pressed a character
+                // call the game with user input character
+                if (wordGame.userInput(strChar)) {
 
-            //update the screen with every user input
-            targetUnderscore.textContent = "Word to Guess - " + wordGame.getUnderscore();
+                    // check to see if the user has won the game
+                    if (wordGame.getIsGameRunning() === false) {
+                        targetUserMessage.textContent = "You are a WINNER!!! Awesomeness abounds!!!  Press another key to guess a new word. ";
+                    }
+                }
+                else {
+                    // game over and update the user data
+                    targetUserMessage.textContent = "YOU LOST...so very sorry. Press another key to guess a new word";
+                }
+            }
+
+            targetUnderscore.textContent = "Word to Guess = " + wordGame.getUnderscore();
             targetWins.textContent = "Wins = " + wordGame.getWins();
             targetLosses.textContent = "Losses = " + wordGame.getLosses();
             targetCharsLeft.textContent = "Tries Remaining = " + wordGame.getCharsLeft();
             targetUserInput.textContent = "User Input = " + strChar;
-            targetUnderscore.textContent = "Word to Guess = " + wordGame.getUnderscore();
-
         };
 
     </script>

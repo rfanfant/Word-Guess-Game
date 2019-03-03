@@ -185,14 +185,14 @@ var wordGame = {
       this.userGuess = inputCharacter;
 
       if (this.guessesRemaining === 0)
-         this.startGame();
+         return false;
 
       // do nothing if input character has already been entered by the user
       if (this.duplicateInputCharacter(this.userGuess) == true) {
          if (enableDebug)
             console.log("duplicate character found");
 
-         return;
+         return true;
       }
 
       if (enableDebug)
@@ -220,7 +220,6 @@ var wordGame = {
             if (enableDebug)
                console.log("match found!!");
          }
-         return true;
       }
       else {
          // wrong guess so are we done?
@@ -229,9 +228,8 @@ var wordGame = {
             this.losses++;
             this.gamesOver();
             return false;
-         }
-
-      }
+         }      }
+      return true;
    },
 
 
@@ -247,11 +245,12 @@ var wordGame = {
       this.userGuesss = "";
       this.userGuessedCharacters.length = 0;
       this.hangmanCharacters.length = 0;
-      
+      this.secretWord.length = 0;
+
       secretWord = this.getWord();
 
       // populate hangman characters
-      for (var i = 0; i < this.secretWord.length; i++) {
+      for (var i = 0; i < this.secretWord.length ; i++) {
          this.hangmanCharacters.push("-");
       }
    },
