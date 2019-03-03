@@ -5,6 +5,7 @@ var enableDebug = true;
 
 var wordGame = {
 
+   gameRunning: true,
    wins: 0,
    losses: 0,
    secretWord: [],
@@ -35,59 +36,52 @@ var wordGame = {
          console.log("Computer selected the word: " + this.secretWord);
    },
 
-   /********************************************************************************************
-    * updates the game display based off user input
-    * *****************************************************************************************/
-   updateDisplay: function () {
 
-      console.log("**********************************************************************");
-      console.log("wins: " + this.wins);
-      console.log("losses: " + this.losses);
-      console.log("guesses: " + this.guessesRemaining);
-      console.log("user guess: " + this.userGuess);
-      console.log("User Guessed Characters: " + this.userGuessedCharacters);
-      console.log("Hangman Charactres: " + this.hangmanCharacters);
-      console.log("***********************************************************************");
+   /***** ***************************************************************************************
+   * updates the game display based total user wins
+   * *****************************************************************************************/
+   getIsGameRunning: function () {
+      return this.gameRunning;
+   },
+   /***** ***************************************************************************************
+   * updates the game display based total user wins
+   * *****************************************************************************************/
+   getUnderscore: function () {
+      return this.hangmanCharacters;
    },
 
    /********************************************************************************************
    * updates the game display based total user wins
    * *****************************************************************************************/
-   displayWins: function () {
-      if (enableDebug)
-         console.log(" userGuess is conatined in secret word");
+   getWins: function () {
+      return this.wins;
    },
 
    /********************************************************************************************
-* updates the game display based total user wins
-* *****************************************************************************************/
-   displayMatches: function () {
-      if (enableDebug)
-         console.log("displayMatches has been called");
+   *  returns number of guesses remaining
+   ******************************************************************************************/
+   getCharsLeft: function () {
+      return this.guessesRemaining;
    },
-
-
-
    /********************************************************************************************
-   * updates the game display based total user losses
+   * updates the game display numbre of wins
    * *****************************************************************************************/
-   displayLosses: function () {
+   getLosses: function () {
+      return this.losses;
    },
 
-
-
    /********************************************************************************************
-   * updates the game display based on how many guesses the user has remaining
-   * *****************************************************************************************/
-   displayGuessesRemaining: function () {
+  * updates the game display with characters users has already guessed
+  * *****************************************************************************************/
+   getGuessedCharacters: function () {
+      return this.userGuessedCharacters;
    },
 
    /********************************************************************************************
    * updates the game display with characters users has already guessed
    * *****************************************************************************************/
-   displayGuessedCharacters: function () {
-
-      console.log("userGuessedCharacters: " + this.userGuessedCharacters);
+   getUserInput: function () {
+      return this.userInput;
    },
 
    /********************************************************************************************
@@ -104,11 +98,8 @@ var wordGame = {
    },
 
    userWins: function () {
-      if (enableDebug)
-         console.log("user Wins function called");
 
-      alert(" You  WON the WORD GUESS game!!! Congrats!!!");
-
+      this.wins++;
    },
 
    /********************************************************************************************
@@ -192,7 +183,9 @@ var wordGame = {
 
       // Save user input
       this.userGuess = inputCharacter;
-      alert("userGuess: " + inputCharacter);
+
+      if (this.guessesRemaining === 0)
+         this.startGame();
 
       // do nothing if input character has already been entered by the user
       if (this.duplicateInputCharacter(this.userGuess) == true) {
@@ -223,25 +216,21 @@ var wordGame = {
          if (this.wordFound() == true) {
             this.userWins();
             this.gamesOver();
-            this.startGame();
 
             if (enableDebug)
                console.log("match found!!");
          }
-         this.updateDisplay();
+         return true;
       }
       else {
-
+         // wrong guess so are we done?
          this.guessesRemaining = this.guessesRemaining - 1;
-         if (this.guessesRemaining > 0) {
-            if (enableDebug)
-               console.log("calling updateDisplay");
-            this.updateDisplay();
-         }
-         else { // games over so restart game
+         if (this.guessesRemaining <= 0) {
+            this.losses++;
             this.gamesOver();
-            this.startGame();
+            return false;
          }
+
       }
    },
 
@@ -252,31 +241,18 @@ var wordGame = {
      **********************************************************************************************/
    startGame: function () {
 
+    // Intialize all our variables at the start of a new game
+      this.gameRunning = true;
+      this.guessesRemaining = 9;
+      this.userGuesss = "";
+      this.userGuessedCharacters.length = 0;
+      this.hangmanCharacters.length = 0;
+      
       secretWord = this.getWord();
+
+      // populate hangman characters
       for (var i = 0; i < this.secretWord.length; i++) {
          this.hangmanCharacters.push("-");
-      }
-
-      // Intialize all our variables at the start of a new game
-
-      if (enableDebug)
-         alert(this.welcomeToWordGuess);
-
-
-      guessesRemaining = 9;
-      wins = 0;
-      userGuess = "";
-      userGuessedCharacters = "";
-      guessesRemaining = 9;
-      userGuess = "";
-      hangmanCharacters = "";
-      userGuessedCharacters = "";
-
-      this.updateDisplay()
-
-      if (enableDebug) {
-         console.log("hangmanCharacters: " + this.hangmanCharacters);
-         console.log("userGuessedCharacters: " + this.userGuessedCharacters);
       }
    },
 
@@ -285,15 +261,6 @@ var wordGame = {
    * the key is stored in the guessedCharacter array; 
    **********************************************************************************************/
    gamesOver: function () {
-
-      alert("Game over");
-      secretWord = this.getWord();
-      guessesRemaining = 9;
-      userGuess = "";
-      wins = 0;
-      hangmanCharacters = "";
-      userGuessedCharacters = "";
-      this.updateDisplay();
+      this.gameRunning= false;
    }
-
 };
