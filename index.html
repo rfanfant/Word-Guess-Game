@@ -41,6 +41,10 @@
 
     <p id=Underscore>
     </p>
+
+    <p id=GuessedCharacters>
+        </p> 
+
     <p id=Wins>
     </p>
     <p id=Losses>
@@ -68,6 +72,7 @@
         var targetUserInput = document.getElementById("UserInput");
         var targetCharsLeft = document.getElementById("TriesRemaining");
         var targetUnderscore = document.getElementById("Underscore");
+        var targetGuessedCharacters = document.getElementById("GuessedCharacters");
         var targetUserMessage = document.getElementById("UserMessage");
         /* Initialize the game */
         wordGame.startGame();
@@ -77,9 +82,9 @@
         targetUnderscore.textContent = "Word to Guess = " + wordGame.getUnderscore();
         targetWins.textContent = "Wins = 0 ";
         targetLosses.textContent = "Losses = 0";
-        targetCharsLeft.textContent = "Tries Remaining = 9 "
-        targetUserInput.textContent = "User Input = "
-
+        targetCharsLeft.textContent = "Tries Remaining = 9 ";
+        targetUserInput.textContent = "User Input = ";
+        targetGuessedCharacters.textContent = "Guessed Characters = ";
 
 
         // converts user input to lowercase, then passes input char to wordGame Object
@@ -98,7 +103,6 @@
                 // game is running and user has pressed a character
                 // call the game with user input character
                 if (wordGame.userInput(strChar)) {
-
                     // check to see if the user has won the game
                     if (wordGame.getIsGameRunning() === false) {
                         targetUserMessage.textContent = "You are a WINNER!!! Awesomeness abounds!!!  Press another key to guess a new word. ";
@@ -111,6 +115,7 @@
             }
 
             targetUnderscore.textContent = "Word to Guess = " + wordGame.getUnderscore();
+            targetGuessedCharacters.textContent = "Guessed charagers = " + wordGame.getGuessedCharacters();
             targetWins.textContent = "Wins = " + wordGame.getWins();
             targetLosses.textContent = "Losses = " + wordGame.getLosses();
             targetCharsLeft.textContent = "Tries Remaining = " + wordGame.getCharsLeft();

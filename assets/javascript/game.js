@@ -1,7 +1,7 @@
 
 
 // Enable debugging 
-var enableDebug = true;
+var enableDebug = false;
 
 var wordGame = {
 
@@ -38,13 +38,14 @@ var wordGame = {
 
 
    /***** ***************************************************************************************
-   * updates the game display based total user wins
+   *  returns true if the game is still running, else returns false
    * *****************************************************************************************/
    getIsGameRunning: function () {
       return this.gameRunning;
    },
+
    /***** ***************************************************************************************
-   * updates the game display based total user wins
+   * returns the hangman character string
    * *****************************************************************************************/
    getUnderscore: function () {
       return this.hangmanCharacters;
@@ -64,21 +65,21 @@ var wordGame = {
       return this.guessesRemaining;
    },
    /********************************************************************************************
-   * updates the game display numbre of wins
+   * returns the number of losses
    * *****************************************************************************************/
    getLosses: function () {
       return this.losses;
    },
 
    /********************************************************************************************
-  * updates the game display with characters users has already guessed
+  * returns list of character(s) guesses by the user
   * *****************************************************************************************/
    getGuessedCharacters: function () {
       return this.userGuessedCharacters;
    },
 
    /********************************************************************************************
-   * updates the game display with characters users has already guessed
+   * returns the recent character that the user guessed
    * *****************************************************************************************/
    getUserInput: function () {
       return this.userInput;
@@ -97,8 +98,11 @@ var wordGame = {
          return true;
    },
 
+   /********************************************************************************************
+   * returns who many wins the user has
+   * 
+   **********************************************************************************************/
    userWins: function () {
-
       this.wins++;
    },
 
@@ -130,7 +134,8 @@ var wordGame = {
    },
 
    /********************************************************************************************
-   *  determines if user input characters  matches our secret word
+   *  determines if the user input characters matches our secret word. Returns true if user 
+   *  has matched our secret word
    * *****************************************************************************************/
    wordFound: function (inputCharacter) {
       // save user input
@@ -151,13 +156,13 @@ var wordGame = {
    },
 
    /********************************************************************************************
-    *  returns true if usser guessed the characters in our secret word
+    *  returns true if  the single character entered by the user matches at least one character
+    *  in our secret word. Else return false
     * *****************************************************************************************/
    charMatches: function () {
 
       // iterate through every character in secretWord and to make sure guessedCharacters contains it,
       // if so return true, else return false
-
       console.log("check to see if user guess matches any characters in secret word!");
       if (this.secretWord.indexOf(this.userGuess) !== -1) {
          if (enableDebug)
@@ -169,21 +174,20 @@ var wordGame = {
          return true;
       }
       else {
-         if (enableDebug)
-            console.log(" NO character match in our secret word!");
+         // input character doesn't match any character in secret word
          return false;
       }
    },
 
    /********************************************************************************************
     * called when OnKeyUp event has occured. inputCharacter contains the key that the user pressed.
-    * the key is stored in the guessedCharacter array; 
     **********************************************************************************************/
    userInput: function (inputCharacter) {
 
-      // Save user input
+      // Save user input character
       this.userGuess = inputCharacter;
 
+      // if we have no guesses remaining return false
       if (this.guessesRemaining === 0)
          return false;
 
@@ -195,9 +199,6 @@ var wordGame = {
          return true;
       }
 
-      if (enableDebug)
-         console.log(" NOT a duplicate character");
-
       // not a duplicate therefore it's a valid selction so 
       // we will keep track of it
       this.userGuessedCharacters.push(inputCharacter);
@@ -205,15 +206,18 @@ var wordGame = {
       if (enableDebug)
          console.log(this.userGuessedCharacters);
 
-
+      // determine if input character matches any character in 
+      // our secret word
       if (this.charMatches(this.userGuess) == true) {
 
          if (enableDebug) {
             console.log("We've found a match");
          }
 
-         // we've found a match so update the display
+         // we've found a match so check if user has correctly
+         // guessed our word
          if (this.wordFound() == true) {
+            // user wins the game
             this.userWins();
             this.gamesOver();
 
@@ -222,24 +226,29 @@ var wordGame = {
          }
       }
       else {
-         // wrong guess so are we done?
+         // wrong guess so determine if are we done? first decrement guesses remaing.
+         // returns false if game is over (i.e. no guesses remaining) else return true. 
          this.guessesRemaining = this.guessesRemaining - 1;
          if (this.guessesRemaining <= 0) {
+            // no guesses remaining so game over
             this.losses++;
             this.gamesOver();
             return false;
-         }      }
+         }
+      }
+      // this code will never will be called but just in case....
+      if(enableDebug)
+         alert("ASSERT...this location should never be reached")
       return true;
    },
 
 
    /********************************************************************************************
-     * called when OnKeyUp event has occured. inputCharacter contains the key that the user pressed.
-     * the key is stored in the guessedCharacter array; 
+     * startGame sets up the inital conditions at the start of every game. 
      **********************************************************************************************/
    startGame: function () {
 
-    // Intialize all our variables at the start of a new game
+      // Intialize all our variables at the start of a new game
       this.gameRunning = true;
       this.guessesRemaining = 9;
       this.userGuesss = "";
@@ -247,19 +256,21 @@ var wordGame = {
       this.hangmanCharacters.length = 0;
       this.secretWord.length = 0;
 
+      // generate a secret word
       secretWord = this.getWord();
+      console.log("secret word is " + this.secretWord);
 
-      // populate hangman characters
-      for (var i = 0; i < this.secretWord.length ; i++) {
+      // populate each hangman characters with dashes, based on 
+      // on the number of characters of our secret word
+      for (var i = 0; i < this.secretWord.length; i++) {
          this.hangmanCharacters.push("-");
       }
    },
 
    /********************************************************************************************
-   * called when OnKeyUp event has occured. inputCharacter contains the key that the user pressed.
-   * the key is stored in the guessedCharacter array; 
+   * returns the running state of the game. return true if game is running, else return false
    **********************************************************************************************/
    gamesOver: function () {
-      this.gameRunning= false;
+      this.gameRunning = false;
    }
 };
